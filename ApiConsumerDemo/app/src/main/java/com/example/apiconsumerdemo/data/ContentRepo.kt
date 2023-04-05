@@ -14,7 +14,7 @@ internal class ContentRepoImpl @Inject constructor(
 
     override suspend fun loadListContent(): List<DemoContent> {
         return try {
-            val dtos = remoteDatasource.getListContentDtos()
+            val dtos = remoteDatasource.fetchListContentDtos()
             dtos.map { DemoContent(it) }
         } catch (e: Exception) {
             Log.e(this.toString(), ContentError.NoContentFound(e).toString())

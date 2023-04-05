@@ -8,7 +8,7 @@ import javax.inject.Inject
 internal class RemoteContentDataSource @Inject constructor(
     private val apiService: ApiService
 ): ContentDataSource {
-    override suspend fun getListContentDtos(): List<DemoContentDto> {
+    override suspend fun fetchListContentDtos(): List<DemoContentDto> {
         val result = apiService.getListContent()
         if (result.isSuccessful) {
             return result.body() ?: emptyList()

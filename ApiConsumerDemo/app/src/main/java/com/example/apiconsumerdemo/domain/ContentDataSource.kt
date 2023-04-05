@@ -4,6 +4,6 @@ import com.example.apiconsumerdemo.data.DemoContentDto
 
 internal interface ContentDataSource {
 
-    suspend fun getListContentDtos(): List<DemoContentDto>
+    suspend fun fetchListContentDtos(): List<DemoContentDto>
 
 }
