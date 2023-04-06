@@ -79,6 +79,7 @@ internal class ListFragment : Fragment(), ContentListDelegate {
     }
 
     private fun onUiStateUpdate(newState: ListUiState) {
+        binding.listErrorMessage.text = ""
         binding.listRefreshLayout.isRefreshing = false
         when (newState) {
             is ListUiState.Loading -> binding.listRefreshLayout.isRefreshing = true

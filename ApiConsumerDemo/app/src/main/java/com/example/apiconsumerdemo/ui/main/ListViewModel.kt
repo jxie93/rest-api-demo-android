@@ -1,7 +1,9 @@
 package com.example.apiconsumerdemo.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.apiconsumerdemo.data.ContentError
 import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.usecases.GetLocalListContentUseCase
 import com.example.apiconsumerdemo.usecases.GetRemoteListContentUseCase
@@ -28,11 +30,12 @@ internal class ListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ListUiState>(ListUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var loadDataJob: Job? = null
+    private var localDataJob: Job? = null
+    private var remoteDataJob: Job? = null
 
     fun loadLocalData() {
-        loadDataJob?.cancel()
-        loadDataJob = viewModelScope.launch(Dispatchers.IO) {
+        localDataJob?.cancel()
+        localDataJob = viewModelScope.launch(Dispatchers.IO) {
             val contentData = getLocalListContentUseCase.invoke()
             withContext(Dispatchers.Main) {
                 _uiState.emit(ListUiState.Content(contentData))
@@ -42,11 +45,16 @@ internal class ListViewModel @Inject constructor(
 
     fun reloadData() {
         _uiState.tryEmit(ListUiState.Loading)
-        loadDataJob?.cancel()
-        loadDataJob = viewModelScope.launch(Dispatchers.IO) {
-            val contentData = getRemoteListContentUseCase.invoke()
-            withContext(Dispatchers.Main) {
-                _uiState.emit(ListUiState.Content(contentData))
+        remoteDataJob?.cancel()
+        remoteDataJob = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val contentData = getRemoteListContentUseCase.invoke()
+                if (localDataJob?.isActive == true) localDataJob?.cancel()
+                withContext(Dispatchers.Main) {
+                    _uiState.emit(ListUiState.Content(contentData))
+                }
+            } catch (e: Exception) {
+                Log.e(this.toString(), ContentError.NoContentFound(e).toString())
             }
         }
     }

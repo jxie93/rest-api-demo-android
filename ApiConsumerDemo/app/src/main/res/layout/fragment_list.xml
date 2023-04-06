@@ -5,7 +5,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ListFragment">
+    tools:context=".ui.main.ListFragment"
+    android:background="@color/teal_200">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/list_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        tools:text="error message"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/list_refreshLayout"
@@ -14,7 +22,6 @@
         android:layout_height="match_parent">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_recyclerView"
-            android:background="@color/teal_200"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
