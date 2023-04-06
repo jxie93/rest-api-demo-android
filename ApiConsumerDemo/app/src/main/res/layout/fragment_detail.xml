@@ -8,6 +8,13 @@
     tools:context=".ui.main.ListFragment"
     android:background="@android:color/holo_orange_dark">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/detail_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        tools:text="error message"/>
+
     <ProgressBar
         android:id="@+id/detail_progressBar"
         android:layout_width="match_parent"

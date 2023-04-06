@@ -6,6 +6,7 @@ import com.example.apiconsumerdemo.data.ContentRepoImpl
 import com.example.apiconsumerdemo.data.DemoContentDto
 import com.example.apiconsumerdemo.data.RemoteContentDataSource
 import com.example.apiconsumerdemo.domain.DemoContent
+import com.example.apiconsumerdemo.ui.main.ListUiState
 import com.example.apiconsumerdemo.ui.main.ListViewModel
 import com.example.apiconsumerdemo.usecases.GetDetailContentUseCase
 import com.example.apiconsumerdemo.usecases.GetListContentUseCase
@@ -64,46 +65,24 @@ class ListViewModelTest {
     }
 
     @Test
-    fun `check reloadData sets isLoading to false on content`() = runTest {
+    fun `check reloadData returns valid content to uiState`() = runTest {
         // given
 
         // when
         coEvery { getListContentUseCase.invoke() } returns emptyList()
         listViewModel.reloadData()
-        var result: Boolean? = null
+        var result: ListUiState? = null
 
         // then
         val job = testScope.launch {
-            listViewModel.isLoading.collect {
+            listViewModel.uiState.collect {
                 result = it
             }
         }
 
         job.cancelAndJoin()
 
-        assertEquals(result, false)
-    }
-
-
-    @Test
-    fun `check reloadData sends data to listDataFlow`() = runTest {
-        // given
-
-        // when
-        coEvery { getListContentUseCase.invoke() } returns emptyList()
-        listViewModel.reloadData()
-        var result: List<DemoContent>? = null
-
-        // then
-        val job = testScope.launch {
-            listViewModel.listDataFlow.collect {
-                result = it
-            }
-        }
-
-        job.cancelAndJoin()
-
-        assertEquals(result, emptyList<DemoContent>())
+        assertEquals(result, ListUiState.Content(emptyList()))
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.apiconsumerdemo.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.apiconsumerdemo.data.ContentRepo
@@ -16,32 +17,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+internal sealed class ListUiState {
+    object Loading: ListUiState()
+    data class Content(val data: List<DemoContent>) : ListUiState()
+}
+
 @HiltViewModel
 internal class ListViewModel @Inject constructor(
     private val getListContentUseCase: GetListContentUseCase
 ) : ViewModel() {
 
-    private val _listDataFlow = MutableStateFlow<List<DemoContent>>(emptyList())
-    val listDataFlow = _listDataFlow.asStateFlow()
-
-    //TODO to ui state
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
+    private val _uiState = MutableStateFlow<ListUiState>(ListUiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     private var remoteDataJob: Job? = null
 
-    init {
-        reloadData()
-    }
-
     fun reloadData() {
-        _isLoading.value = true
+        _uiState.tryEmit(ListUiState.Loading)
         remoteDataJob?.cancel()
         remoteDataJob = viewModelScope.launch(Dispatchers.IO) {
             val contentData = getListContentUseCase.invoke()
             withContext(Dispatchers.Main) {
-                _isLoading.value = false
-                _listDataFlow.value = contentData
+                _uiState.emit(ListUiState.Content(contentData))
             }
         }
     }

@@ -9,7 +9,7 @@ import com.example.apiconsumerdemo.domain.DemoContent
 import com.squareup.picasso.Picasso
 
 internal interface ContentListDelegate {
-    fun onListItemPressed(itemId: String)
+    fun onListItemPressed(content: DemoContent)
 }
 
 internal class ContentListAdapter(
@@ -84,8 +84,11 @@ internal class ContentListAdapter(
     override fun onViewAttachedToWindow(holder: ContentListViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.itemView.setOnClickListener(
-            ContentListViewHolder.onClick(holder) {
-                delegate.onListItemPressed(it)
+            ContentListViewHolder.onClick(holder) { itemId ->
+                val dataItem = data
+                    .firstOrNull { content -> content.id == itemId }
+                    .takeIf { content -> content?.isPlaceholder == false } ?: return@onClick
+                delegate.onListItemPressed(dataItem)
             }
         )
     }

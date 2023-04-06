@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailFragment : Fragment() {
+internal class DetailFragment : Fragment() {
     companion object {
         private const val ARG_ITEM_ID = "ARG_ITEM_ID"
         fun newInstance(id: String) = DetailFragment().apply {
@@ -73,15 +73,22 @@ class DetailFragment : Fragment() {
         binding.detailDescription.text = content.description
     }
 
+    private fun onUiStateUpdate(newState: DetailUiState) {
+        binding.detailProgressBar.isVisible = false
+        binding.detailErrorMessage.text = ""
+        when (newState) {
+            is DetailUiState.Loading -> binding.detailProgressBar.isVisible = true
+            is DetailUiState.Content -> updateContentDetails(newState.data)
+            is DetailUiState.Error -> binding.detailErrorMessage.text = newState.message
+        }
+    }
+
     private fun subscribeFlows() {
         lifecycleScope.launchWhenResumed {
-            viewModel.detailDataFlow.filterNotNull().onEach {
+            viewModel.uiState.onEach {
                 withContext(Dispatchers.Main) {
-                    updateContentDetails(it)
+                    onUiStateUpdate(it)
                 }
-            }.launchIn(this)
-            viewModel.isLoading.onEach {
-                binding.detailProgressBar.isVisible = it
             }.launchIn(this)
         }
     }

@@ -2,10 +2,12 @@ package com.example.apiconsumerdemo.ui.main
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apiconsumerdemo.R
@@ -13,14 +15,16 @@ import com.example.apiconsumerdemo.databinding.FragmentListBinding
 import com.example.apiconsumerdemo.domain.DemoContent
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ListFragment : Fragment(), ContentListDelegate {
+internal class ListFragment : Fragment(), ContentListDelegate {
 
     companion object {
         fun newInstance() = ListFragment()
@@ -52,29 +56,17 @@ class ListFragment : Fragment(), ContentListDelegate {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.listRefreshLayout.setOnRefreshListener { reloadContentList() }
-
+        binding.listRefreshLayout.setOnRefreshListener { viewModel.reloadData() }
         setupListRecycler()
+        viewModel.reloadData()
     }
 
-    override fun onListItemPressed(itemId: String) {
-        val pressedItem = viewModel.listDataFlow.value.firstOrNull { it.id == itemId }
-        if (pressedItem == null || pressedItem.isPlaceholder) return
+    override fun onListItemPressed(content: DemoContent) {
         parentFragmentManager
             .beginTransaction()
             .addToBackStack(DetailFragment::class.java.name)
-            .add(R.id.container, DetailFragment.newInstance(itemId))
+            .add(R.id.container, DetailFragment.newInstance(content.id))
             .commit()
-    }
-
-    private fun reloadContentList() {
-        val refreshLayout = binding.listRefreshLayout
-        lifecycleScope.launch {
-            refreshLayout.isRefreshing = true
-            delay(100) //prevent stuck in forever loading
-            refreshLayout.isRefreshing = false
-        }
-        viewModel.reloadData()
     }
 
     private fun setupListRecycler() {
@@ -89,13 +81,20 @@ class ListFragment : Fragment(), ContentListDelegate {
         contentListAdapter.updateData(data.ifEmpty { contentPlaceholders }, true)
     }
 
+    private fun onUiStateUpdate(newState: ListUiState) {
+        binding.listRefreshLayout.isRefreshing = false
+        when (newState) {
+            is ListUiState.Loading -> binding.listRefreshLayout.isRefreshing = true
+            is ListUiState.Content -> onDisplayDataUpdate(newState.data)
+        }
+    }
+
     private fun subscribeFlows() {
         lifecycleScope.launchWhenResumed {
-            viewModel.listDataFlow.onEach {
-                onDisplayDataUpdate(it)
-            }.launchIn(this)
-            viewModel.isLoading.onEach {
-                binding.listRefreshLayout.isRefreshing = it
+            viewModel.uiState.onEach {
+                withContext(Dispatchers.Main) {
+                    onUiStateUpdate(it)
+                }
             }.launchIn(this)
         }
     }

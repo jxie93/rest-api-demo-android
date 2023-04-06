@@ -6,6 +6,7 @@ import com.example.apiconsumerdemo.data.ContentRepoImpl
 import com.example.apiconsumerdemo.data.DemoContentDto
 import com.example.apiconsumerdemo.data.RemoteContentDataSource
 import com.example.apiconsumerdemo.domain.DemoContent
+import com.example.apiconsumerdemo.ui.main.DetailUiState
 import com.example.apiconsumerdemo.ui.main.DetailViewModel
 import com.example.apiconsumerdemo.ui.main.ListViewModel
 import com.example.apiconsumerdemo.usecases.GetDetailContentUseCase
@@ -32,6 +33,7 @@ import kotlinx.coroutines.test.setMain
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.Before
 import org.junit.Rule
@@ -52,6 +54,8 @@ class DetailViewModelTest {
 
     @Before
     fun setUp() {
+        mockkStatic(Uri::class)
+        every { Uri.parse(any()) } returns mockk()
         MockKAnnotations.init(this, relaxUnitFun = true)
         Dispatchers.setMain(testDispatcher)
     }
@@ -69,45 +73,52 @@ class DetailViewModelTest {
     }
 
     @Test
-    fun `check loadContent sets isLoading to false on content`() = runTest {
+    fun `check loadContent returns valid content to uiState`() = runTest {
         // given
+        val testContent = DemoContent(
+            id = "test_id",
+            title = "test_title",
+            description = "test_description",
+            image = Uri.parse(""),
+            isPlaceholder = false
+        )
 
         // when
-        coEvery { getDetailContentUseCase.invoke(any()) } returns null
+        coEvery { getDetailContentUseCase.invoke(any()) } returns testContent
         detailViewModel.loadContent("test_id")
-        var result: Boolean? = null
+        var result: DetailUiState? = null
 
         // then
         val job = testScope.launch {
-            detailViewModel.isLoading.collect {
+            detailViewModel.uiState.collect {
                 result = it
             }
         }
 
         job.cancelAndJoin()
 
-        assertEquals(result, false)
+        assertEquals(result, DetailUiState.Content(testContent))
     }
 
     @Test
-    fun `check loadContent sends data to detailDataFlow`() = runTest {
+    fun `check loadContent returns error uiState if no valid content`() = runTest {
         // given
 
         // when
         coEvery { getDetailContentUseCase.invoke(any()) } returns null
         detailViewModel.loadContent("test_id")
-        var result: DemoContent? = null
+        var result: DetailUiState? = null
 
         // then
         val job = testScope.launch {
-            detailViewModel.detailDataFlow.collect {
+            detailViewModel.uiState.collect {
                 result = it
             }
         }
 
         job.cancelAndJoin()
 
-        assertEquals(result, null)
+        assertTrue(result is DetailUiState.Error)
     }
 
 }

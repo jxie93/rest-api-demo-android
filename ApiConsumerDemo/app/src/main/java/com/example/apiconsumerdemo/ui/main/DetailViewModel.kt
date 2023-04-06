@@ -12,29 +12,32 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+internal sealed class DetailUiState {
+    object Loading: DetailUiState()
+    data class Content(val data: DemoContent) : DetailUiState()
+    data class Error(val message: String) : DetailUiState()
+}
+
 @HiltViewModel
 internal class DetailViewModel @Inject constructor(
     private val getDetailContentUseCase: GetDetailContentUseCase
 ) : ViewModel() {
 
-    private val _detailDataFlow = MutableStateFlow<DemoContent?>(null)
-    val detailDataFlow = _detailDataFlow.asStateFlow()
-
-    //TODO to ui state
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
-
-    init {
-        _isLoading.value = true
-    }
+    private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     fun loadContent(id: String) {
-        _isLoading.value = true
+        _uiState.tryEmit(DetailUiState.Loading)
         viewModelScope.launch(Dispatchers.IO) {
             val contentData = getDetailContentUseCase.invoke(id)
             withContext(Dispatchers.Main) {
-                _isLoading.value = false
-                _detailDataFlow.value = contentData
+                _uiState.emit(
+                    if (contentData != null) {
+                        DetailUiState.Content(contentData)
+                    } else {
+                        DetailUiState.Error("Content not found!")
+                    }
+                )
             }
         }
     }
