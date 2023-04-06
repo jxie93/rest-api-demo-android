@@ -2,6 +2,7 @@ package com.example.apiconsumerdemo
 
 import com.example.apiconsumerdemo.ui.main.ListUiState
 import com.example.apiconsumerdemo.ui.main.ListViewModel
+import com.example.apiconsumerdemo.usecases.GetLocalListContentUseCase
 import com.example.apiconsumerdemo.usecases.GetRemoteListContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -28,6 +29,9 @@ class ListViewModelTest {
 
     @MockK
     internal lateinit var getRemoteListContentUseCase: GetRemoteListContentUseCase
+
+    @MockK
+    internal lateinit var getLocalListContentUseCase: GetLocalListContentUseCase
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = CoroutineScope(testDispatcher)
@@ -69,6 +73,18 @@ class ListViewModelTest {
         job.cancelAndJoin()
 
         assertEquals(result, ListUiState.Content(emptyList()))
+    }
+
+    @Test
+    fun `check loadLocalData invokes getLocalListContentUseCase`() = runTest {
+        // given
+
+        // when
+        coEvery { getLocalListContentUseCase.invoke() } returns emptyList()
+        listViewModel.loadLocalData()
+
+        // then
+        coVerify { getLocalListContentUseCase.invoke() }
     }
 
 }

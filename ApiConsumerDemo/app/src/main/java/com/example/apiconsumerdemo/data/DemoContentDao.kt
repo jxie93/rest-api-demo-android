@@ -13,13 +13,13 @@ internal interface DemoContentDao {
     fun getAll(): List<DemoContent>
 
     @Insert(onConflict = REPLACE)
-    fun insertAndReplace(coffee: DemoContent)
+    fun insertAndReplace(content: DemoContent)
 
     @Insert(onConflict = REPLACE)
-    fun insertAndReplaceAll(coffee: List<DemoContent>)
+    fun insertAndReplaceAll(contents: List<DemoContent>)
 
     @Delete
-    fun delete(coffee: DemoContent)
+    fun delete(content: DemoContent)
 
     @Query("DELETE FROM demoContent")
     fun deleteAll()

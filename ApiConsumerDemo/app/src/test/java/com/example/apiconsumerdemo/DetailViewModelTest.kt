@@ -4,6 +4,7 @@ import android.net.Uri
 import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.ui.main.DetailUiState
 import com.example.apiconsumerdemo.ui.main.DetailViewModel
+import com.example.apiconsumerdemo.usecases.GetLocalDetailContentUseCase
 import com.example.apiconsumerdemo.usecases.GetRemoteDetailContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -34,6 +35,9 @@ class DetailViewModelTest {
 
     @MockK
     internal lateinit var getRemoteDetailContentUseCase: GetRemoteDetailContentUseCase
+
+    @MockK
+    internal lateinit var getLocalDetailContentUseCase: GetLocalDetailContentUseCase
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = CoroutineScope(testDispatcher)
@@ -105,6 +109,18 @@ class DetailViewModelTest {
         job.cancelAndJoin()
 
         assertTrue(result is DetailUiState.Error)
+    }
+
+    @Test
+    fun `check localLocalContent invokes getLocalDetailContentUseCase with correct data`() = runTest {
+        // given
+
+        // when
+        coEvery { getLocalDetailContentUseCase.invoke(any()) } returns null
+        detailViewModel.localLocalContent("test_id")
+
+        // then
+        coVerify { getLocalDetailContentUseCase.invoke("test_id") }
     }
 
 }

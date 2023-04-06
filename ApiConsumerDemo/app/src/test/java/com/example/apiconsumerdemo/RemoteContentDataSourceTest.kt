@@ -2,6 +2,7 @@ package com.example.apiconsumerdemo
 
 import com.example.apiconsumerdemo.data.DemoContentDto
 import com.example.apiconsumerdemo.data.RemoteContentDataSource
+import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.remote.api.ApiService
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -62,7 +63,7 @@ class RemoteContentDataSourceTest {
         val result = remoteDataSource.fetchListContent()
 
         // then
-        assertEquals(result, listOf(testDto))
+        assertEquals(result, listOf(DemoContent(testDto)))
     }
 
     @Test
