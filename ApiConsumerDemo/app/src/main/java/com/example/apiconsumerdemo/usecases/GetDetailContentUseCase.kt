@@ -4,7 +4,7 @@ import com.example.apiconsumerdemo.data.ContentRepo
 import com.example.apiconsumerdemo.domain.DemoContent
 import javax.inject.Inject
 
-internal class GetDetailContentUseCse @Inject constructor(
+internal class GetDetailContentUseCase @Inject constructor(
     private val contentRepo: ContentRepo
 ) {
     suspend operator fun invoke(itemId: String): DemoContent? {

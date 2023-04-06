@@ -3,7 +3,7 @@ package com.example.apiconsumerdemo.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.apiconsumerdemo.domain.DemoContent
-import com.example.apiconsumerdemo.usecases.GetDetailContentUseCse
+import com.example.apiconsumerdemo.usecases.GetDetailContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,12 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class DetailViewModel @Inject constructor(
-    private val getDetailContentUseCse: GetDetailContentUseCse
+    private val getDetailContentUseCase: GetDetailContentUseCase
 ) : ViewModel() {
 
     private val _detailDataFlow = MutableStateFlow<DemoContent?>(null)
     val detailDataFlow = _detailDataFlow.asStateFlow()
 
+    //TODO to ui state
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
@@ -28,8 +29,9 @@ internal class DetailViewModel @Inject constructor(
     }
 
     fun loadContent(id: String) {
+        _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            val contentData = getDetailContentUseCse.invoke(id)
+            val contentData = getDetailContentUseCase.invoke(id)
             withContext(Dispatchers.Main) {
                 _isLoading.value = false
                 _detailDataFlow.value = contentData

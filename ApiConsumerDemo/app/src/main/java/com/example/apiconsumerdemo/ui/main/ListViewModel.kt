@@ -24,6 +24,7 @@ internal class ListViewModel @Inject constructor(
     private val _listDataFlow = MutableStateFlow<List<DemoContent>>(emptyList())
     val listDataFlow = _listDataFlow.asStateFlow()
 
+    //TODO to ui state
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
