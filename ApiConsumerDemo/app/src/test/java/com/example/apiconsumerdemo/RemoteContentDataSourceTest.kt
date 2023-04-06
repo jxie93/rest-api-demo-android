@@ -2,7 +2,6 @@ package com.example.apiconsumerdemo
 
 import com.example.apiconsumerdemo.data.DemoContentDto
 import com.example.apiconsumerdemo.data.RemoteContentDataSource
-import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.remote.api.ApiService
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -14,8 +13,8 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.junit.Assert.assertEquals
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import kotlin.test.assertFailsWith

@@ -1,16 +1,10 @@
 package com.example.apiconsumerdemo
 
 import android.net.Uri
-import com.example.apiconsumerdemo.data.ContentRepo
-import com.example.apiconsumerdemo.data.ContentRepoImpl
-import com.example.apiconsumerdemo.data.DemoContentDto
-import com.example.apiconsumerdemo.data.RemoteContentDataSource
 import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.ui.main.DetailUiState
 import com.example.apiconsumerdemo.ui.main.DetailViewModel
-import com.example.apiconsumerdemo.ui.main.ListViewModel
 import com.example.apiconsumerdemo.usecases.GetDetailContentUseCase
-import com.example.apiconsumerdemo.usecases.GetListContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -23,22 +17,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import okhttp3.MediaType
-import okhttp3.ResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Test
 import org.junit.Before
-import org.junit.Rule
-import retrofit2.HttpException
-import retrofit2.Response
+import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DetailViewModelTest {

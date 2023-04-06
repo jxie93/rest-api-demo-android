@@ -2,7 +2,6 @@ package com.example.apiconsumerdemo.ui.main
 
 import android.os.SystemClock
 import android.view.View
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
@@ -45,7 +44,7 @@ internal class ContentListViewHolder(view: View, private val picasso: Picasso): 
     }
 
     fun reset() {
-
+        itemView.tag = null
     }
 
 }
