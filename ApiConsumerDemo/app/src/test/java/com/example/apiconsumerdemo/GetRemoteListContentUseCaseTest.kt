@@ -1,7 +1,7 @@
 package com.example.apiconsumerdemo
 
 import com.example.apiconsumerdemo.data.ContentRepo
-import com.example.apiconsumerdemo.usecases.GetListContentUseCase
+import com.example.apiconsumerdemo.usecases.GetRemoteListContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,10 +13,10 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetListContentUseCaseTest {
+class GetRemoteListContentUseCaseTest {
 
     @InjectMockKs
-    internal lateinit var getListContentUseCase: GetListContentUseCase
+    internal lateinit var getRemoteListContentUseCase: GetRemoteListContentUseCase
 
     @MockK
     internal lateinit var contentRepo: ContentRepo
@@ -31,11 +31,11 @@ class GetListContentUseCaseTest {
         // given
 
         // when
-        coEvery { contentRepo.loadListContent() } returns emptyList()
-        getListContentUseCase.invoke()
+        coEvery { contentRepo.loadRemoteListContent() } returns emptyList()
+        getRemoteListContentUseCase.invoke()
 
         // then
-        coVerify { contentRepo.loadListContent() }
+        coVerify { contentRepo.loadRemoteListContent() }
     }
 
 }

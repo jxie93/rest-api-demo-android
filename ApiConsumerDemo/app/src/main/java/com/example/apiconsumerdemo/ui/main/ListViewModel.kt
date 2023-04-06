@@ -3,7 +3,8 @@ package com.example.apiconsumerdemo.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.apiconsumerdemo.domain.DemoContent
-import com.example.apiconsumerdemo.usecases.GetListContentUseCase
+import com.example.apiconsumerdemo.usecases.GetLocalListContentUseCase
+import com.example.apiconsumerdemo.usecases.GetRemoteListContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,19 +21,30 @@ internal sealed class ListUiState {
 
 @HiltViewModel
 internal class ListViewModel @Inject constructor(
-    private val getListContentUseCase: GetListContentUseCase
+    private val getRemoteListContentUseCase: GetRemoteListContentUseCase,
+    private val getLocalListContentUseCase: GetLocalListContentUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ListUiState>(ListUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var remoteDataJob: Job? = null
+    private var loadDataJob: Job? = null
+
+    fun loadLocalData() {
+        loadDataJob?.cancel()
+        loadDataJob = viewModelScope.launch(Dispatchers.IO) {
+            val contentData = getLocalListContentUseCase.invoke()
+            withContext(Dispatchers.Main) {
+                _uiState.emit(ListUiState.Content(contentData))
+            }
+        }
+    }
 
     fun reloadData() {
         _uiState.tryEmit(ListUiState.Loading)
-        remoteDataJob?.cancel()
-        remoteDataJob = viewModelScope.launch(Dispatchers.IO) {
-            val contentData = getListContentUseCase.invoke()
+        loadDataJob?.cancel()
+        loadDataJob = viewModelScope.launch(Dispatchers.IO) {
+            val contentData = getRemoteListContentUseCase.invoke()
             withContext(Dispatchers.Main) {
                 _uiState.emit(ListUiState.Content(contentData))
             }

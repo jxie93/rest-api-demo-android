@@ -2,7 +2,7 @@ package com.example.apiconsumerdemo
 
 import com.example.apiconsumerdemo.ui.main.ListUiState
 import com.example.apiconsumerdemo.ui.main.ListViewModel
-import com.example.apiconsumerdemo.usecases.GetListContentUseCase
+import com.example.apiconsumerdemo.usecases.GetRemoteListContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,7 +27,7 @@ class ListViewModelTest {
     internal lateinit var listViewModel: ListViewModel
 
     @MockK
-    internal lateinit var getListContentUseCase: GetListContentUseCase
+    internal lateinit var getRemoteListContentUseCase: GetRemoteListContentUseCase
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = CoroutineScope(testDispatcher)
@@ -43,11 +43,11 @@ class ListViewModelTest {
         // given
 
         // when
-        coEvery { getListContentUseCase.invoke() } returns emptyList()
+        coEvery { getRemoteListContentUseCase.invoke() } returns emptyList()
         listViewModel.reloadData()
 
         // then
-        coVerify { getListContentUseCase.invoke() }
+        coVerify { getRemoteListContentUseCase.invoke() }
     }
 
     @Test
@@ -55,7 +55,7 @@ class ListViewModelTest {
         // given
 
         // when
-        coEvery { getListContentUseCase.invoke() } returns emptyList()
+        coEvery { getRemoteListContentUseCase.invoke() } returns emptyList()
         listViewModel.reloadData()
         var result: ListUiState? = null
 

@@ -47,7 +47,7 @@ class RemoteContentDataSourceTest {
 
         // when
         coEvery { apiService.getListContent() } returns Response.success(emptyList())
-        remoteDataSource.fetchListContentDtos()
+        remoteDataSource.fetchListContent()
 
         // then
         coVerify { apiService.getListContent() }
@@ -59,7 +59,7 @@ class RemoteContentDataSourceTest {
 
         // when
         coEvery { apiService.getListContent() } returns Response.success(listOf(testDto))
-        val result = remoteDataSource.fetchListContentDtos()
+        val result = remoteDataSource.fetchListContent()
 
         // then
         assertEquals(result, listOf(testDto))
@@ -76,7 +76,7 @@ class RemoteContentDataSourceTest {
 
         // then
         assertFailsWith<HttpException> {
-            remoteDataSource.fetchListContentDtos()
+            remoteDataSource.fetchListContent()
         }
     }
 }

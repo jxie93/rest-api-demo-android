@@ -5,20 +5,28 @@ import com.example.apiconsumerdemo.domain.DemoContent
 import javax.inject.Inject
 
 internal interface ContentRepo {
-    suspend fun loadListContent(): List<DemoContent>
+    suspend fun loadRemoteListContent(): List<DemoContent>
+    suspend fun loadLocalListContent(): List<DemoContent>
 }
 
 internal class ContentRepoImpl @Inject constructor(
     private val remoteDatasource: RemoteContentDataSource,
+    private val localDataSource: LocalContentDataSource
 ): ContentRepo {
 
-    override suspend fun loadListContent(): List<DemoContent> {
+    override suspend fun loadRemoteListContent(): List<DemoContent> {
+        val remoteData = remoteDatasource.fetchListContent()
+        localDataSource.saveContent(remoteData)
         return try {
-            val dtos = remoteDatasource.fetchListContentDtos()
-            dtos.map { DemoContent(it) }
+            remoteData
         } catch (e: Exception) {
             Log.e(this.toString(), ContentError.NoContentFound(e).toString())
             emptyList()
         }
     }
+
+    override suspend fun loadLocalListContent(): List<DemoContent> {
+        return localDataSource.fetchListContent()
+    }
+
 }

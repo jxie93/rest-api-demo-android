@@ -54,6 +54,7 @@ internal class ListFragment : Fragment(), ContentListDelegate {
         super.onViewCreated(view, savedInstanceState)
         binding.listRefreshLayout.setOnRefreshListener { viewModel.reloadData() }
         setupListRecycler()
+        viewModel.loadLocalData()
         viewModel.reloadData()
     }
 

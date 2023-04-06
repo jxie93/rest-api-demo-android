@@ -52,6 +52,7 @@ internal class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.getString(ARG_ITEM_ID)?.let {
+            viewModel.localLocalContent(it)
             viewModel.loadContent(it)
         }
     }

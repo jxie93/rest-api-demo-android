@@ -4,7 +4,7 @@ import android.net.Uri
 import com.example.apiconsumerdemo.domain.DemoContent
 import com.example.apiconsumerdemo.ui.main.DetailUiState
 import com.example.apiconsumerdemo.ui.main.DetailViewModel
-import com.example.apiconsumerdemo.usecases.GetDetailContentUseCase
+import com.example.apiconsumerdemo.usecases.GetRemoteDetailContentUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -33,7 +33,7 @@ class DetailViewModelTest {
     internal lateinit var detailViewModel: DetailViewModel
 
     @MockK
-    internal lateinit var getDetailContentUseCase: GetDetailContentUseCase
+    internal lateinit var getRemoteDetailContentUseCase: GetRemoteDetailContentUseCase
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = CoroutineScope(testDispatcher)
@@ -51,11 +51,11 @@ class DetailViewModelTest {
         // given
 
         // when
-        coEvery { getDetailContentUseCase.invoke(any()) } returns null
+        coEvery { getRemoteDetailContentUseCase.invoke(any()) } returns null
         detailViewModel.loadContent("test_id")
 
         // then
-        coVerify { getDetailContentUseCase.invoke("test_id") }
+        coVerify { getRemoteDetailContentUseCase.invoke("test_id") }
     }
 
     @Test
@@ -70,7 +70,7 @@ class DetailViewModelTest {
         )
 
         // when
-        coEvery { getDetailContentUseCase.invoke(any()) } returns testContent
+        coEvery { getRemoteDetailContentUseCase.invoke(any()) } returns testContent
         detailViewModel.loadContent("test_id")
         var result: DetailUiState? = null
 
@@ -91,7 +91,7 @@ class DetailViewModelTest {
         // given
 
         // when
-        coEvery { getDetailContentUseCase.invoke(any()) } returns null
+        coEvery { getRemoteDetailContentUseCase.invoke(any()) } returns null
         detailViewModel.loadContent("test_id")
         var result: DetailUiState? = null
 

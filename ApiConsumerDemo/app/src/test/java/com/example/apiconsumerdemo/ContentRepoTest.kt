@@ -52,11 +52,11 @@ class ContentRepoTest {
         // given
 
         // when
-        coEvery { remoteDataSource.fetchListContentDtos() } returns emptyList()
-        contentRepo.loadListContent()
+        coEvery { remoteDataSource.fetchListContent() } returns emptyList()
+        contentRepo.loadRemoteListContent()
 
         // then
-        coVerify { remoteDataSource.fetchListContentDtos() }
+        coVerify { remoteDataSource.fetchListContent() }
     }
 
     @Test
@@ -64,8 +64,8 @@ class ContentRepoTest {
         // given
 
         // when
-        coEvery { remoteDataSource.fetchListContentDtos() } returns listOf(testDto)
-        val result = contentRepo.loadListContent()
+        coEvery { remoteDataSource.fetchListContent() } returns listOf(testDto)
+        val result = contentRepo.loadRemoteListContent()
 
         // then
         assertEquals(result, listOf(DemoContent(testDto)))
@@ -78,8 +78,8 @@ class ContentRepoTest {
         // when
         val errorResponseBody = ResponseBody.create(MediaType.parse("application/json")!!, "error message")
         val httpException = HttpException(Response.error<Any>(404, errorResponseBody))
-        coEvery { remoteDataSource.fetchListContentDtos() } throws httpException
-        val result = contentRepo.loadListContent()
+        coEvery { remoteDataSource.fetchListContent() } throws httpException
+        val result = contentRepo.loadRemoteListContent()
 
         // then
         assertEquals(result, emptyList<DemoContent>())
